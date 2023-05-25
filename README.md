@@ -4,7 +4,7 @@
 - Visualisation 
 
 
-## Representation of basic blockchain metrics 
+## basic blockchain metrics 
 - Correlation between BTC and ETH 
 - Distribution of Total Address Count for each coin by Holder Amount
 - Network Hashrate and Difficulty
