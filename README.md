@@ -1,4 +1,4 @@
-## Represenantion of some data analytics steps.
+### Represenantion of some data analytics steps.
 - Data extraction 
 - Data preprocessing 
 - Visualisation 
@@ -12,3 +12,6 @@
 - Active Addresses compared to bitcoin
 - Transaction Count compared to Bitcoin 
 - Large Transactions ETH vs BTC
+
+## Weather in London 
+- Basic tutorial "how to dealing with Apache Spark"
