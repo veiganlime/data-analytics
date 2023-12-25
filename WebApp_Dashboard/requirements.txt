@@ -1,0 +1,6 @@
+# Run command in terminal pip3 install -r requirements.txt    
+streamlit
+pandas 
+plotly
+psycopg2 #in case of error psycopg2-binary
+requests
