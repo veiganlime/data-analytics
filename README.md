@@ -15,3 +15,7 @@
 
 ## Weather in London 
 - Basic tutorial "how to dealing with Apache Spark"
+
+## WebApp based financial Dashboard
+- Developing financial dashboard using Streamlit
+
