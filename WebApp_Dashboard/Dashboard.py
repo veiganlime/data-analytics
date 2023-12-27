@@ -23,8 +23,44 @@ if option == "Owerview":
     
     df = pd.read_sql_query("SELECT * FROM PORTFOLIO", conn)
     df = df.drop(columns=['ID'])
-    st.dataframe(df)
-    st.dataframe(test.df_sum_1)
+    #st.dataframe(df)
+
+
+    conn = sql.connect('data/Crypto.db')
+
+    df_sum = pd.read_sql_query("SELECT * FROM PORTFOLIO", conn)
+    df_sum = df_sum.drop(columns=['ID'])
+
+    #print(df_sum)
+
+
+    df_sum['TotalAmount'] = df_sum.groupby('Ticker')['Amount'].transform('sum')
+
+    pd.set_option('display.float_format', '{:.6f}'.format)
+    df_sum_1 = df_sum[['Ticker', 'TotalAmount']].drop_duplicates()
+    #print(df_sum_1)
+    tickers_to_drop = ['VTX', 'CITY', 'IONX']
+    df_sum_1 = df_sum_1[~df_sum_1['Ticker'].isin(tickers_to_drop)]
+    #print(df_sum_1)
+    values = []
+
+    for index, row in df_sum_1.iterrows():
+        ticker = row['Ticker']
+        #print(ticker)
+        total_amount = row['TotalAmount']
+        #print(total_amount)
+        price = test.get_price(ticker)
+        #print(price)
+        calculated_value = total_amount * price
+        values.append(calculated_value)
+
+    df_sum_1['value'] = values
+    #print(df_sum_1)
+    st.dataframe(df_sum_1)
+
+
+
+
 
 if option == "dashboard 2":
     
