@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import sqlite3 as sql
 
-import test
+import main
 
 st.sidebar.write("This is the sidebar")
 
@@ -38,7 +38,7 @@ if option == "Owerview":
     for index, row in df_sum_1.iterrows(): # Loop to calculate the current value of each coin.
         ticker = row['Ticker']
         total_amount = row['TotalAmount']
-        price = test.get_price(ticker)# get_price function with API request.
+        price = main.get_price(ticker)# get_price function with API request.
         calculated_value = total_amount * price
         values.append(calculated_value)
 
