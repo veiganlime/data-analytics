@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import sqlite3 as sql
 import main
+import yfinance as yf
 
 st.sidebar.write("This is the sidebar")
 
@@ -10,7 +11,7 @@ st.sidebar.write("This is the sidebar")
 
 option = st.sidebar.selectbox(
     'Select dashboard',
-    ('Owerview', 'dashboard 2', 'dashboard 3'))
+    ('Owerview', 'Line chart', 'dashboard 3'))
 
 if option == "Owerview":
 
@@ -45,14 +46,25 @@ if option == "Owerview":
     st.dataframe(df_sum_1)
 
 
-if option == "dashboard 2":
+if option == "Line chart":
     
-    st.title("This is the title 2")
-    st.header("This is the header")
-    st.write("This is a regular text")
+    input = st.text_input('Ticker:')
+    ticker = f'{input}-USD'
+    if len(input) > 0:
+        start = st.date_input('Start', value = pd.to_datetime('2023-12-01'))
+        end = st.date_input('End', value = pd.to_datetime('today'))
 
-    df = pd.DataFrame(np.random.randn(50,20), columns=('col %d' % i for i in range(20)))
-    st.dataframe(df)
+        end = "2023-12-20"
+        df = yf.download(ticker, start, end)
+        df = df.drop(columns=['Open', 'High', 'Low', 'Adj Close', 'Volume'])
+
+        df.reset_index(inplace=True)
+        df['Date'] = df['Date'].dt.strftime('%Y/%m/%d')    
+
+        st.line_chart(
+        df, x="Date", y=["Close"], color=["#FF0000"] 
+        )
+
 
 if option == "dashboard 3":
     

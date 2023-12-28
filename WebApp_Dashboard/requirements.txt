@@ -4,3 +4,4 @@ pandas
 plotly
 psycopg2 #in case of error psycopg2-binary
 requests
+yfinance
