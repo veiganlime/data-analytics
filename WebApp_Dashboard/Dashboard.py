@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import sqlite3 as sql
-
 import main
 
 st.sidebar.write("This is the sidebar")
