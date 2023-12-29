@@ -5,15 +5,15 @@ import sqlite3 as sql
 import main
 import yfinance as yf
 
-st.sidebar.write("This is the sidebar")
+st.sidebar.write("Select dashboard:")
 
 
 
 option = st.sidebar.selectbox(
     'Select dashboard',
-    ('Owerview', 'Line chart', 'dashboard 3'))
+    ('Porfolio owerview', 'Line chart', 'dashboard 3'))
 
-if option == "Owerview":
+if option == "Porfolio owerview":
 
     st.title("Portfolio overwiev")
 
