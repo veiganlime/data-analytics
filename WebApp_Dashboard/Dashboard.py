@@ -53,8 +53,6 @@ if option == "Line chart":
     if len(input) > 0:
         start = st.date_input('Start', value = pd.to_datetime('2023-12-01'))
         end = st.date_input('End', value = pd.to_datetime('today'))
-
-        end = "2023-12-20"
         df = yf.download(ticker, start, end)
         df = df.drop(columns=['Open', 'High', 'Low', 'Adj Close', 'Volume'])
 
