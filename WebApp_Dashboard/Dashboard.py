@@ -16,35 +16,8 @@ option = st.sidebar.selectbox(
 
 if option == "Porfolio owerview":
 
-    st.title("Portfolio overwiev")    
-
-    conn = sql.connect('data/Crypto.db') # SQL database connection
-    df_sum = pd.read_sql_query("SELECT * FROM PORTFOLIO", conn)
-    df_sum = df_sum.drop(columns=['ID'])
-
-
-    df_sum['TotalAmount'] = df_sum.groupby('Ticker')['Amount'].transform('sum')
-    df_sum.rename(columns={'TotalAmount':'Quantity'}, inplace=True)
-
-    pd.set_option('display.float_format', '{:.6f}'.format)
-    df_prepeared = df_sum[['Ticker', 'Quantity']].drop_duplicates()
-    tickers_to_drop = ['VTX', 'CITY', 'IONX']# Drop a few rows for now due to an issue with the market maker. In the future, try using API requests with another financial aggregator.
-    df_prepeared = df_prepeared[~df_prepeared['Ticker'].isin(tickers_to_drop)]
-
-    values = []
-    for index, row in df_prepeared.iterrows(): # Loop to calculate the current value of each coin.
-        ticker = row['Ticker']
-        total_amount = row['Quantity']
-        price = main.get_price(ticker)# get_price function with API request.
-        calculated_value = total_amount * price
-        values.append(calculated_value)
-
-    df_prepeared['value'] = values
-
-    sum_value = df_prepeared['value'].sum()
-    formatted_sum = f"The total holdings: {sum_value:.2f}"
-    st.write(formatted_sum)
-
+    st.title("Portfolio overwiev")
+    df_prepeared = main.load_data()
     st.dataframe(df_prepeared)
     plot = px.pie(df_prepeared, values='value', names='Ticker',title='Allocation',width=650, height=650 )
     st.plotly_chart(plot)

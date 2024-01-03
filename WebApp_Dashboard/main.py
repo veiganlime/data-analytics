@@ -2,6 +2,8 @@ import pandas as pd
 import requests
 import json
 import yaml
+import streamlit as st
+import sqlite3 as sql
 
 # get the api key
 yaml_file = open('api_key/api_config_cc.yml', 'r')
@@ -32,6 +34,38 @@ def get_price(ticker):
     ticker_price_df = ticker_price_df.rename(columns={'close': f'{ticker} price'})
     price = ticker_price_df.at[1, f'{ticker} price']
     return(price)
+
+def load_data():
+
+    conn = sql.connect('data/Crypto.db') # SQL database connection
+    df_sum = pd.read_sql_query("SELECT * FROM PORTFOLIO", conn)
+    df_sum = df_sum.drop(columns=['ID'])
+
+
+    df_sum['TotalAmount'] = df_sum.groupby('Ticker')['Amount'].transform('sum')
+    df_sum.rename(columns={'TotalAmount':'Quantity'}, inplace=True)
+
+    pd.set_option('display.float_format', '{:.6f}'.format)
+    df_prepeared = df_sum[['Ticker', 'Quantity']].drop_duplicates()
+    tickers_to_drop = ['VTX', 'CITY', 'IONX']# Drop a few rows for now due to an issue with the market maker. In the future, try using API requests with another financial aggregator.
+    df_prepeared = df_prepeared[~df_prepeared['Ticker'].isin(tickers_to_drop)]
+
+    values = []
+    for index, row in df_prepeared.iterrows(): # Loop to calculate the current value of each coin.
+        ticker = row['Ticker']
+        total_amount = row['Quantity']
+        price = get_price(ticker)# get_price function with API request.
+        calculated_value = total_amount * price
+        values.append(calculated_value)
+
+    df_prepeared['value'] = values
+
+    sum_value = df_prepeared['value'].sum()
+    formatted_sum = f"The total holdings: {sum_value:.2f}"
+    st.write(formatted_sum)
+
+
+    return df_prepeared
 
 
 
