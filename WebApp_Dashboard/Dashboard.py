@@ -40,6 +40,11 @@ if option == "Porfolio owerview":
         values.append(calculated_value)
 
     df_prepeared['value'] = values
+
+    sum_value = df_prepeared['value'].sum()
+    formatted_sum = f"The total holdings: {sum_value:.2f}"
+    st.write(formatted_sum)
+
     st.dataframe(df_prepeared)
     plot = px.pie(df_prepeared, values='value', names='Ticker',title='Allocation',width=650, height=650 )
     st.plotly_chart(plot)
