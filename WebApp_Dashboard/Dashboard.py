@@ -9,7 +9,7 @@ import plotly_express as px
 st.sidebar.write("Select dashboard:")
 
 
-
+st.write("This dashboard is still under deployement")
 option = st.sidebar.selectbox(
     'Select dashboard',
     ('Porfolio owerview', 'Line chart', 'dashboard 3'))
