@@ -22,7 +22,7 @@ def api_request(url):
 
 def prepare_pricedata(df):
     df['date'] = pd.to_datetime(df['time'], unit='s')
-    df.drop(columns=['time', 'conversionType', 'conversionSymbol','high', 'low', 'open', 'volumefrom', 'volumeto', 'date'], inplace=True)   
+    #df.drop(columns=['time', 'conversionType', 'conversionSymbol','high', 'low', 'open', 'volumefrom', 'volumeto', 'date'], inplace=True)   
     return df
 
 def get_price(ticker):
@@ -36,10 +36,10 @@ def get_price(ticker):
     return(price)
 
 def load_data():
-
     conn = sql.connect('data/Crypto.db') # SQL database connection
     df_sum = pd.read_sql_query("SELECT * FROM PORTFOLIO", conn)
-    df_sum = df_sum.drop(columns=['ID'])
+    conn.close
+    #df_sum = df_sum.drop(columns=['ID'])
 
 
     df_sum['TotalAmount'] = df_sum.groupby('Ticker')['Amount'].transform('sum')
@@ -50,56 +50,7 @@ def load_data():
     tickers_to_drop = ['VTX', 'CITY', 'IONX']# Drop a few rows for now due to an issue with the market maker. In the future, try using API requests with another financial aggregator.
     df_prepeared = df_prepeared[~df_prepeared['Ticker'].isin(tickers_to_drop)]
 
-    values = []
-    for index, row in df_prepeared.iterrows(): # Loop to calculate the current value of each coin.
-        ticker = row['Ticker']
-        total_amount = row['Quantity']
-        price = get_price(ticker)# get_price function with API request.
-        calculated_value = total_amount * price
-        values.append(calculated_value)
-
-    df_prepeared['value'] = values
-
-
-    # Total investment value calculation 
-    df_sum['Amount'] = df_sum['Amount'].astype(float)
-    df_sum['BuyPrice'] = df_sum['BuyPrice'].replace({',': ''}, regex=True).astype(float)
-    df_sum['Invested Value'] = df_sum['Amount'] * df_sum['BuyPrice']
-    
-
-    """     total_invested_value = df_sum['Invested Value'].sum()
-        formatted_sum_total_invested = f"Total Invested: ${total_invested_value:.2f}"    
-
-        sum_value = df_prepeared['value'].sum()
-        formatted_sum = f"The total holdings: ${sum_value:.2f}"
-
-        unrealised_profit = sum_value - total_invested_value
-        formatted_sum_unrealised_profit = f"Unrealised Profit:  ${unrealised_profit:.2f}" """
-
-
-
-    total_invested_value = 1750
-    formatted_sum_total_invested = f"Total Invested: ${total_invested_value:.2f}"    
-
-    sum_value = 47563
-    formatted_sum = f"The total holdings: ${sum_value:.2f}"
-
-    unrealised_profit = sum_value - total_invested_value
-    formatted_sum_unrealised_profit = f"Unrealised Profit:  ${unrealised_profit:.2f}"
-
-
-
-
-
-    # display outputs
-    container = st.container(border=True)
-    container.write(formatted_sum_total_invested)
-    container.divider()
-    container.write(formatted_sum)
-    container.divider()
-    container.write(formatted_sum_unrealised_profit)
-
-    return df_prepeared
+    return df_prepeared, df_sum
 
 
 
