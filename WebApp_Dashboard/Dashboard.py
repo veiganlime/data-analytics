@@ -33,13 +33,12 @@ if option == "Porfolio owerview":
     df_sum['Amount'] = df_sum['Amount'].astype(float)
     df_sum['BuyPrice'] = df_sum['BuyPrice'].replace({',': ''}, regex=True).astype(float)
     df_sum['Invested Value'] = df_sum['Amount'] * df_sum['BuyPrice']
+    
 
-
-
-    total_invested_value = 1750
+    total_invested_value = df_sum['Invested Value'].sum()
     formatted_sum_total_invested = f"Total Invested: ${total_invested_value:.2f}"    
 
-    sum_value = 47563
+    sum_value = df_prepeared['value'].sum()
     formatted_sum = f"The total holdings: ${sum_value:.2f}"
 
     unrealised_profit = sum_value - total_invested_value
@@ -52,8 +51,6 @@ if option == "Porfolio owerview":
     container.write(formatted_sum)
     container.divider()
     container.write(formatted_sum_unrealised_profit)
-
-
     st.dataframe(df_prepeared)
     plot = px.pie(df_prepeared, values='value', names='Ticker',title='Allocation',width=650, height=650 )
     st.plotly_chart(plot)
