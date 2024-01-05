@@ -59,6 +59,8 @@ def load_data():
         values.append(calculated_value)
 
     df_prepeared['value'] = values
+
+
     # Total investment value calculation 
     df_sum['Amount'] = df_sum['Amount'].astype(float)
     df_sum['BuyPrice'] = df_sum['BuyPrice'].replace({',': ''}, regex=True).astype(float)
@@ -73,16 +75,14 @@ def load_data():
 
     unrealised_profit = sum_value - total_invested_value
     formatted_sum_unrealised_profit = f"Unrealised Profit:  ${unrealised_profit:.2f}"
-
+    # display outputs
     container = st.container(border=True)
     container.write(formatted_sum_total_invested)
+    container.divider()
     container.write(formatted_sum)
+    container.divider()
     container.write(formatted_sum_unrealised_profit)
-
-    #st.write(formatted_sum)
-    #st.write(formatted_sum_total_inested)
-
-
+    
     return df_prepeared
 
 
