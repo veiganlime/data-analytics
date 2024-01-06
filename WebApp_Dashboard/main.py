@@ -2,15 +2,15 @@ import pandas as pd
 import requests
 import json
 import yaml
-import streamlit as st
 import sqlite3 as sql
+import numpy as np
 
 # get the api key
 yaml_file = open('api_key/api_config_cc.yml', 'r')
 p = yaml.load(yaml_file, Loader=yaml.FullLoader)
 api_key = p['api_key']
 
-
+# API requset 
 def api_request(url):
     headers = {'authorization': 'Apikey ' + api_key,}
     session = requests.Session()
@@ -22,7 +22,6 @@ def api_request(url):
 
 def prepare_pricedata(df):
     df['date'] = pd.to_datetime(df['time'], unit='s')
-    #df.drop(columns=['time', 'conversionType', 'conversionSymbol','high', 'low', 'open', 'volumefrom', 'volumeto', 'date'], inplace=True)   
     return df
 
 def get_price(ticker):
@@ -36,12 +35,12 @@ def get_price(ticker):
     return(price)
 
 def load_data():
-    conn = sql.connect('data/Crypto.db') # SQL database connection
+    # Load the data from SQL database
+    conn = sql.connect('data/Crypto.db') 
     df_sum = pd.read_sql_query("SELECT * FROM PORTFOLIO", conn)
     conn.close
-    #df_sum = df_sum.drop(columns=['ID'])
 
-
+    # Data preparation
     df_sum['TotalAmount'] = df_sum.groupby('Ticker')['Amount'].transform('sum')
     df_sum.rename(columns={'TotalAmount':'Quantity'}, inplace=True)
 
@@ -68,10 +67,15 @@ def dca_calculation(data ,start_date, end_date, payment):
     avg_cost = total_spend/ sum(stack)
     cost_now = price * sum(stack)
     percentage = price / avg_cost
-    result = abs(1 - percentage)                
-    
+    result = abs(1 - percentage)    
     
     return total_spend , stack, avg_cost, price, cost_now, result
+
+def nearest_datetime_value(items, pivot):
+
+    time_diff = np.abs([date - pivot for date in items])
+
+    return time_diff.argmin(0)
 
 
 
