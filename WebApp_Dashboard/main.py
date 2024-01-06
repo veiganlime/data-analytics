@@ -53,4 +53,25 @@ def load_data():
     return df_prepeared, df_sum
 
 
+def dca_calculation(data ,start_date, end_date, payment):
+    stack = []
+    total_spend = 0
+    
+    start_index = data.index.get_loc(str(start_date))
+    end_index = data.index.get_loc(str(end_date))
+    data = data[start_index:end_index]
+    for price in data['Adj Close']:                
+        amount = payment*100/price *0.01                
+        stack.append(amount)
+        total_spend+=payment
+        
+    avg_cost = total_spend/ sum(stack)
+    cost_now = price * sum(stack)
+    percentage = price / avg_cost
+    result = abs(1 - percentage)                
+    
+    
+    return total_spend , stack, avg_cost, price, cost_now, result
+
+
 

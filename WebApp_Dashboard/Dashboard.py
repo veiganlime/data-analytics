@@ -96,45 +96,29 @@ if option == "DCA Calculator":
         end_period = st.date_input('End', value = pd.to_datetime('today'))
         stock_data = yf.download(tickers=ticker, period = 'max', interval = '1d')
 
-        if start_period in stock_data.index.date:
+        if start_period in stock_data.index.date:       
             
-            def dca_calculation(data ,start_date, end_date, payment):
-                stack = []
-                total_spend = 0
-                
-                start_index = data.index.get_loc(str(start_date))
-                end_index = data.index.get_loc(str(end_date))
-                data = data[start_index:end_index]
-                for price in data['Adj Close']:                
-                    amount = payment*100/price *0.01                
-                    stack.append(amount)
-                    total_spend+=payment
-                    
-                avg_cost = total_spend/ sum(stack)
-                cost_now = price * sum(stack)
-                percentage = price / avg_cost
-                result = abs(1 - percentage)                
-                
-                
-                return total_spend , stack, avg_cost, price, cost_now, result
-
-            total_spend , stack, avg_cost, price, cost_now, result  = dca_calculation(stock_data,start_period, end_period, payment)
+            total_spend , stack, avg_cost, price, cost_now, result  = main.dca_calculation(stock_data,start_period, end_period, payment)
 
             formatted_total_spend = f"Total spend:  ${total_spend:.2f}"
             formatted_cost_now = f"Cost today:  ${cost_now:.2f}"
 
+            # display outputs
             container = st.container(border=True)
             container.write(formatted_total_spend)
             container.divider()
             container.write(formatted_cost_now)
+
         else:
             first_date_in_dataframe = stock_data.index.date[0]
             input_upper = input.upper()
             error_message =  f"Your start date is not present in the date range for {input_upper} coin. Please change the start date value. The first available date is {first_date_in_dataframe} "
             st.divider()
             st.write(error_message)
-            st.divider()      
+            st.divider()
+
     elif len(input) == 0:
         st.write("Please enter the tickers value!")
+
     elif len(payment_str) == 0:
         st.write("Please add a Purchase amount!")
