@@ -83,15 +83,13 @@ if option == "Line chart":
 if option == "DCA Calculator":
     
     st.title("Dollar cost average Calculator")
-
     input = st.text_input('Ticker:')
     ticker = f'{input}-USD'
-
-    payment_str = st.text_input('Purchase amount in $:')
-    
+    payment_str = st.text_input('Purchase amount in $:')    
     RepeatePurchase = st.selectbox(
     'Repeate Purchase:',
     ('Daily', 'Weekly', 'Monthly'))
+
     if len(input) & len(payment_str) > 0:
         payment = float(payment_str)
         start_period = st.date_input('Start', value = pd.to_datetime('2023-01-01'))
