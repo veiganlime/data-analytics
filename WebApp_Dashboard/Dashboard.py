@@ -108,7 +108,7 @@ if option == "DCA Calculator":
             container.write(formatted_total_spend)
             container.divider()
             container.write(formatted_cost_now)
-
+        #Error handling
         else:
             first_date_in_dataframe = stock_data.index.date[0]
             input_upper = input.upper()
@@ -116,9 +116,9 @@ if option == "DCA Calculator":
             st.divider()
             st.write(error_message)
             st.divider()
-
+     #Error handling
     elif len(input) == 0:
         st.write("Please enter the tickers value!")
-
+    #Error handling
     elif len(payment_str) == 0:
         st.write("Please add a Purchase amount!")
