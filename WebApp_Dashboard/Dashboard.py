@@ -87,11 +87,13 @@ if option == "DCA Calculator":
     input = st.text_input('Ticker:')
     ticker = f'{input}-USD'
 
-    payment = float(st.text_input('Purchase amount in $:'))
+    payment_str = st.text_input('Purchase amount in $:')
+    
     RepeatePurchase = st.selectbox(
     'Repeate Purchase:',
     ('Daily', 'Weekly', 'Monthly'))
-    if len(input) > 0:
+    if len(input) & len(payment_str) > 0:
+        payment = float(payment_str)
         start_period = st.date_input('Start', value = pd.to_datetime('2023-01-01'))
         end_period = st.date_input('End', value = pd.to_datetime('today'))
         stock_data = yf.download(tickers=ticker, period = 'max', interval = '1d')
@@ -133,11 +135,8 @@ if option == "DCA Calculator":
             error_message =  f"Your start date is not present in the date range for {input_upper} coin. Please change the start date value. The first available date is {first_date_in_dataframe} "
             st.divider()
             st.write(error_message)
-            st.divider()
-
-        
-
-
-
-    else:
-        st.write("Please enter the tickers value")
+            st.divider()      
+    elif len(input) == 0:
+        st.write("Please enter the tickers value!")
+    elif len(payment_str) == 0:
+        st.write("Please add a Purchase amount!")
