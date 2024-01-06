@@ -11,7 +11,7 @@ st.sidebar.write("Select dashboard:")
 st.write("This dashboard is still under deployement")
 option = st.sidebar.selectbox(
     'Select dashboard',
-    ('Porfolio owerview', 'Line chart', 'dashboard 3'))
+    ('Porfolio owerview', 'Line chart', 'DCA Calculator'))
 
 if option == "Porfolio owerview":
 
@@ -80,11 +80,64 @@ if option == "Line chart":
         st.write("Please enter the tickers value")
 
 
-if option == "dashboard 3":
+if option == "DCA Calculator":
     
-    st.title("This is the title 3")
-    st.header("This is the header")
-    st.write("This is a regular text")
+    st.title("Dollar cost average Calculator")
 
-    df = pd.DataFrame(np.random.randn(50,20), columns=('col %d' % i for i in range(20)))
-    st.dataframe(df)
+    input = st.text_input('Ticker:')
+    ticker = f'{input}-USD'
+
+    payment = float(st.text_input('Purchase amount in $:'))
+    RepeatePurchase = st.selectbox(
+    'Repeate Purchase:',
+    ('Daily', 'Weekly', 'Monthly'))
+    if len(input) > 0:
+        start_period = st.date_input('Start', value = pd.to_datetime('2023-01-01'))
+        end_period = st.date_input('End', value = pd.to_datetime('today'))
+        stock_data = yf.download(tickers=ticker, period = 'max', interval = '1d')
+
+        if start_period in stock_data.index.date:
+            
+            def dca_calculation(data ,start_date, end_date, payment):
+                stack = []
+                total_spend = 0
+                
+                start_index = data.index.get_loc(str(start_date))
+                end_index = data.index.get_loc(str(end_date))
+                data = data[start_index:end_index]
+                for price in data['Adj Close']:                
+                    amount = payment*100/price *0.01                
+                    stack.append(amount)
+                    total_spend+=payment
+                    
+                avg_cost = total_spend/ sum(stack)
+                cost_now = price * sum(stack)
+                percentage = price / avg_cost
+                result = abs(1 - percentage)                
+                
+                
+                return total_spend , stack, avg_cost, price, cost_now, result
+
+            total_spend , stack, avg_cost, price, cost_now, result  = dca_calculation(stock_data,start_period, end_period, payment)
+
+            formatted_total_spend = f"Total spend:  ${total_spend:.2f}"
+            formatted_cost_now = f"Cost today:  ${cost_now:.2f}"
+
+            container = st.container(border=True)
+            container.write(formatted_total_spend)
+            container.divider()
+            container.write(formatted_cost_now)
+        else:
+            first_date_in_dataframe = stock_data.index.date[0]
+            input_upper = input.upper()
+            error_message =  f"Your start date is not present in the date range for {input_upper} coin. Please change the start date value. The first available date is {first_date_in_dataframe} "
+            st.divider()
+            st.write(error_message)
+            st.divider()
+
+        
+
+
+
+    else:
+        st.write("Please enter the tickers value")
