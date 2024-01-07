@@ -166,62 +166,113 @@ if option == "DCA Calculator":
         st.write("Please add a Purchase amount!")
 
 if option == "Data base":
-    st.write("Insert a new record into a database")
 
-    with st.form(key='input', clear_on_submit=True):
+    option2 = st.sidebar.selectbox(
+    'Select an option:',
+    ('Show data base', 'Add a new record', 'Delete a record'))
 
-        st.write("For the database record, the following data are required: ticker, amount, date, price.")
+    if option2 == "Show data base":
 
-        ticker = st.text_input(label="Ticker:", label_visibility="visible")
-        amount = st.text_input(label="Amount:", label_visibility="visible")
-        buy_date = st.text_input(label="Buy date:", label_visibility="visible")
-        sell_date = st.text_input(label="Sell date:", label_visibility="visible")
-        buy_price = st.text_input(label="Buy price:", label_visibility="visible")
-        sell_price = st.text_input(label="Sell price:", label_visibility="visible")
+        with st.form(key='input', clear_on_submit=True):
 
-        btnResult = st.form_submit_button('Execute')
-        
+            btnResult = st.form_submit_button('Display all rows from data base')
 
-    if btnResult:
-        if len(ticker) > 0:
-            if len(amount) >0:
-            
-                st.text('Query executed')
-
+            if btnResult:
                 conn = sql.connect('data/test.db')
-
-                with conn:
-                    create_table_query = '''CREATE TABLE IF NOT EXISTS PORTFOLIO
-                            (ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                            Ticker           TEXT    NOT NULL,
-                            Amount           INT     NOT NULL,
-                            BuyDate          INT     NOT NULL,
-                            SellDate         INT     NOT NULL,
-                            BuyPrice         INT     NOT NULL ,
-                            SellPrice        INT     NOT NULL)'''
-                    
-                    insert_query = '''
-                        INSERT INTO PORTFOLIO (Ticker, Amount, BuyDate, SellDate, BuyPrice, SellPrice)
-                        VALUES (?, ?, ?, ?, ?, ?);'''
-                    
-                    # if the value is  NULL, then value should be 0.
-                    buy_date = buy_date if buy_date else 0
-                    sell_date = sell_date if sell_date else 0 
-                    buy_price = buy_price if buy_price else 0
-                    sell_price = sell_price if sell_price else 0
-
-                    record_values = (ticker.upper(), amount, buy_date, sell_date, buy_price, sell_price)            
-                    
-                
-                    conn.execute(create_table_query)
-                    conn.execute(insert_query, record_values)
-                
-                conn.commit()
+                df_sql = pd.read_sql_query("SELECT * FROM PORTFOLIO", conn)
+                st.table(df_sql)
                 conn.close()
+
+
+    if option2 == "Add a new record":
+
+        st.write("Insert a new record into a database")
+
+        with st.form(key='input', clear_on_submit=True):
+
+            st.write("For the database record, the following data are required: ticker, amount, date, price.")
+
+            ticker = st.text_input(label="Ticker:", label_visibility="visible")
+            amount = st.text_input(label="Amount:", label_visibility="visible")
+            buy_date = st.text_input(label="Buy date:", label_visibility="visible")
+            sell_date = st.text_input(label="Sell date:", label_visibility="visible")
+            buy_price = st.text_input(label="Buy price:", label_visibility="visible")
+            sell_price = st.text_input(label="Sell price:", label_visibility="visible")
+
+            btnResult = st.form_submit_button('Execute')
+            
+
+        if btnResult:
+            if len(ticker) > 0:
+                if len(amount) >0:
+                
+                    st.text('Query executed')
+
+                    conn = sql.connect('data/test.db')
+
+                    with conn:
+                        create_table_query = '''CREATE TABLE IF NOT EXISTS PORTFOLIO
+                                (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                                Ticker           TEXT    NOT NULL,
+                                Amount           INT     NOT NULL,
+                                BuyDate          INT     NOT NULL,
+                                SellDate         INT     NOT NULL,
+                                BuyPrice         INT     NOT NULL ,
+                                SellPrice        INT     NOT NULL)'''
+                        
+                        insert_query = '''
+                            INSERT INTO PORTFOLIO (Ticker, Amount, BuyDate, SellDate, BuyPrice, SellPrice)
+                            VALUES (?, ?, ?, ?, ?, ?);'''
+                        
+                        # if the value is  NULL, then value should be 0.
+                        buy_date = buy_date if buy_date else 0
+                        sell_date = sell_date if sell_date else 0 
+                        buy_price = buy_price if buy_price else 0
+                        sell_price = sell_price if sell_price else 0
+
+                        record_values = (ticker.upper(), amount, buy_date, sell_date, buy_price, sell_price)            
+                        
+                    
+                        conn.execute(create_table_query)
+                        conn.execute(insert_query, record_values)
+                        # Load the data from SQL database
+                        
+                        df_sql = pd.read_sql_query("SELECT * FROM PORTFOLIO", conn)
+                        st.table(df_sql)
+                    
+                    conn.commit()
+                    conn.close()
+                else:
+                    st.text('Amount Error! - Please give the number of quantity!')
             else:
-                st.text('Amount Error! - Please give the number of quantity!')
-        else:
-            st.text('Ticker Error! - Please give ticker name!')
+                st.text('Ticker Error! - Please give ticker name!')
+
+    if option2 == "Delete a record":
+         
+        st.write("Delete a record from a database")
+
+        with st.form(key='id', clear_on_submit=True):
+
+            id = st.text_input(label="ID:", label_visibility="visible")
+            btnResult = st.form_submit_button('Delete row from data base')
+
+            if btnResult:
+                conn = sql.connect('data/test.db')
+                cursor = conn.cursor()
+                cursor.execute("DELETE FROM PORTFOLIO WHERE ID = ?", (id,))
+                
+
+                affected_rows = cursor.rowcount
+                if affected_rows == 0:
+                    st.write(f"No rows were deleted. Row with ID = {id} might not exist.")
+                else:
+                    st.write(f"Row with ID = {id} has been deleted successfully.")
+                    conn.commit()
+
+                df_sql = pd.read_sql_query("SELECT * FROM PORTFOLIO", conn)
+                st.table(df_sql)
+                conn.close()
+
 
 
         
