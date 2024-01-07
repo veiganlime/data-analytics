@@ -6,10 +6,6 @@ import yfinance as yf
 import plotly_express as px
 import sqlite3 as sql
 
-
-
-
-
 st.sidebar.write("<h1>Igor WebApp</h1>", unsafe_allow_html=True)
 st.write("This dashboard is under deployement")
 option = st.sidebar.selectbox(
@@ -58,7 +54,6 @@ if option == "Porfolio owerview":
     plot = px.pie(df_prepeared, values='value', names='Ticker',title='Allocation',width=650, height=650 )
     st.plotly_chart(plot)
 
-
 if option == "Line chart":
     
     input = st.text_input('Ticker:')
@@ -81,7 +76,6 @@ if option == "Line chart":
         )
     else:
         st.write("Please enter the tickers value")
-
 
 if option == "DCA Calculator":
     # Users Values input
@@ -182,7 +176,6 @@ if option == "Data base":
                 df_sql = pd.read_sql_query("SELECT * FROM PORTFOLIO", conn)
                 st.table(df_sql)
                 conn.close()
-
 
     if option2 == "Add a new record":
 
