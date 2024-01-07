@@ -11,7 +11,7 @@ st.sidebar.write("Select dashboard:")
 st.write("This dashboard is still under deployement")
 option = st.sidebar.selectbox(
     'Select dashboard',
-    ('Porfolio owerview', 'Line chart', 'dashboard 3'))
+    ('Porfolio owerview', 'Line chart', 'DCA Calculator'))
 
 if option == "Porfolio owerview":
 
@@ -80,11 +80,84 @@ if option == "Line chart":
         st.write("Please enter the tickers value")
 
 
-if option == "dashboard 3":
-    
-    st.title("This is the title 3")
-    st.header("This is the header")
-    st.write("This is a regular text")
+if option == "DCA Calculator":
+    # Users Values input
+    st.title("Dollar cost average Calculator")
+    input = st.text_input('Ticker:')
+    ticker = f'{input}-USD'
+    payment_str = st.text_input('Purchase amount in $:')    
+    purchase_period = st.selectbox(
+    'Purchase period:',
+    ('Daily', 'Weekly', 'Monthly'))
 
-    df = pd.DataFrame(np.random.randn(50,20), columns=('col %d' % i for i in range(20)))
-    st.dataframe(df)
+    start_period = st.date_input('Start', value = pd.to_datetime('2023-01-01'))
+    end_period = st.date_input('End', value = pd.to_datetime('today'))
+    
+
+    # Check, the period of investment strategy, and passing the stock dataframe and the date
+    if purchase_period == 'Daily':
+        stock_data = yf.download(tickers=ticker, period = 'max', interval = '1d')
+        closest_start_date = start_period
+        closest_end_date = end_period
+    elif purchase_period == 'Monthly':   
+        stock_data = yf.download(tickers=ticker, period = 'max', interval = '1d')
+        if stock_data.index.min() <= pd.to_datetime(start_period) <= stock_data.index.max():
+            stock_data = stock_data.resample('M').mean()
+
+            start_period = pd.to_datetime(start_period)
+            closest_start_date_index = main.nearest_datetime_value(stock_data.index, start_period)
+            closest_start_date = stock_data.index[closest_start_date_index]
+
+            end_period = pd.to_datetime(end_period)
+            closest_end_date_index = main.nearest_datetime_value(stock_data.index, end_period)
+            closest_end_date = stock_data.index[closest_end_date_index]
+        else: 
+            st.write("Error 1 - Please contact your developer team")
+    elif purchase_period == 'Weekly':
+        stock_data = yf.download(tickers=ticker, period = 'max', interval = '1d')
+        if stock_data.index.min() <= pd.to_datetime(start_period) <= stock_data.index.max():
+            stock_data = stock_data.resample('W').mean()
+
+            start_period = pd.to_datetime(start_period)
+            closest_start_date_index = main.nearest_datetime_value(stock_data.index, start_period)
+            closest_start_date = stock_data.index[closest_start_date_index]
+
+            end_period = pd.to_datetime(end_period)
+            closest_end_date_index = main.nearest_datetime_value(stock_data.index, end_period)
+            closest_end_date = stock_data.index[closest_end_date_index]
+        else:
+            st.write("Error 2- Please contact your developer team")
+
+
+    if len(input) & len(payment_str) > 0:
+        payment = float(payment_str)
+        if stock_data.index.min() <= pd.to_datetime(closest_start_date) <= stock_data.index.max():
+            total_spend , stack, avg_cost, price, cost_now, result  = main.dca_calculation(stock_data,closest_start_date, closest_end_date, payment)
+            total_pofit = cost_now - total_spend
+
+            formatted_total_pofit = f"Total pofit:  ${total_pofit:.2f}"
+            formatted_total_spend = f"Total spend:  ${total_spend:.2f}"
+            formatted_cost_now = f"Cost today:  ${cost_now:.2f}"
+
+            # display outputs
+            container = st.container(border=True)
+            container.write(formatted_total_spend)
+            container.divider()
+            container.write(formatted_cost_now)
+            container.divider()
+            container.write(formatted_total_pofit)
+
+        #Error handling
+        else:
+            first_date_in_dataframe = stock_data.index.date[0]
+            input_upper = input.upper()
+            error_message =  f"Your start date is not present in the date range for {input_upper} coin. Please change the start date value. The first available date is {first_date_in_dataframe} "
+            st.divider()
+            st.write(error_message)
+            st.divider()
+     #Error handling
+    elif len(input) == 0:
+        st.write("Please enter the tickers value!")
+    #Error handling
+    elif len(payment_str) == 0:
+        st.write("Please add a Purchase amount!")

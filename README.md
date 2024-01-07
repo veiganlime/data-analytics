@@ -25,3 +25,5 @@
 ![Alt text](data/images/Dashboard1_2.png)
 ### Dashboard 2 - Line charts
 ![Alt text](data/images/Dashboard2.png)
+### Dashboard 3 - DCA Calculator
+![Alt text](data/images/Dashboard3.png)
