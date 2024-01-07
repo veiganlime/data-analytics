@@ -4,6 +4,7 @@ import numpy as np
 import main
 import yfinance as yf
 import plotly_express as px
+import sqlite3 as sql
 
 
 
@@ -13,7 +14,7 @@ st.sidebar.write("<h1>Igor WebApp</h1>", unsafe_allow_html=True)
 st.write("This dashboard is still under deployement")
 option = st.sidebar.selectbox(
     'Select dashboard',
-    ('Porfolio owerview', 'Line chart', 'DCA Calculator'))
+    ('Porfolio owerview', 'Line chart', 'DCA Calculator', 'Data base'))
 
 if option == "Porfolio owerview":
 
@@ -163,3 +164,52 @@ if option == "DCA Calculator":
     #Error handling
     elif len(payment_str) == 0:
         st.write("Please add a Purchase amount!")
+
+if option == "Data base":
+    st.write("Data base")
+
+    with st.form(key='input', clear_on_submit=True):
+
+        ticker = st.text_input(label="Ticker:", label_visibility="visible")
+        amount = st.text_input(label="Amount:", label_visibility="visible")
+        buy_date = st.text_input(label="Buy date:", label_visibility="visible")
+        sell_date = st.text_input(label="Sell date:", label_visibility="visible")
+        buy_price = st.text_input(label="Buy price:", label_visibility="visible")
+        sell_price = st.text_input(label="Sell price:", label_visibility="visible")
+
+        btnResult = st.form_submit_button('Run')
+        
+
+    if btnResult:
+        st.text('Query executed')
+
+        conn = sql.connect('data/test.db')
+
+        #cursor = conn.cursor()
+        with conn:
+            create_table_query = '''CREATE TABLE IF NOT EXISTS PORTFOLIO
+                    (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Ticker           TEXT    NOT NULL,
+                    Amount           INT     NOT NULL,
+                    BuyDate          INT     NOT NULL,
+                    SellDate         INT     NOT NULL,
+                    BuyPrice         INT     NOT NULL ,
+                    SellPrice        INT     NOT NULL)'''
+            
+            insert_query = '''
+                INSERT INTO PORTFOLIO (Ticker, Amount, BuyDate, SellDate, BuyPrice, SellPrice)
+                VALUES (?, ?, ?, ?, ?, ?);'''
+            
+            record_values = (ticker.upper(), amount, buy_date, sell_date, buy_price, sell_price)            
+            
+        
+            conn.execute(create_table_query)
+            conn.execute(insert_query, record_values)
+        
+        conn.commit()
+        conn.close()
+
+
+        
+
+
