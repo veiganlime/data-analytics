@@ -6,7 +6,7 @@ import yfinance as yf
 import plotly_express as px
 import sqlite3 as sql
 
-st.sidebar.write("<h1>Igor WebApp</h1>", unsafe_allow_html=True)
+st.sidebar.write("<h1>WebApp - Igor</h1>", unsafe_allow_html=True)
 st.write("This dashboard is under deployement")
 option = st.sidebar.selectbox(
     'Select dashboard',
