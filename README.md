@@ -16,6 +16,7 @@
 ### Dashboard 1 - Portfolio overwiev
 ![Alt text](data/images/Dashboard1_1.png)
 ![Alt text](data/images/Dashboard1_2.png)
+![Alt text](data/images/Dashboard1_3.png)
 ### Dashboard 2 - Line charts
 ![Alt text](data/images/Dashboard2.png)
 ### Dashboard 3 - DCA Calculator

@@ -6,6 +6,8 @@ import yfinance as yf
 import plotly_express as px
 import sqlite3 as sql
 
+df_prepeared = []
+
 st.sidebar.write("<h1>WebApp - Igor</h1>", unsafe_allow_html=True)
 st.write("This dashboard is under deployement")
 option = st.sidebar.selectbox(
@@ -32,6 +34,13 @@ if option == "Porfolio owerview":
     df_sum['Amount'] = df_sum['Amount'].astype(float)
     df_sum['BuyPrice'] = df_sum['BuyPrice'].replace({',': ''}, regex=True).astype(float)
     df_sum['Invested Value'] = df_sum['Amount'] * df_sum['BuyPrice']
+
+
+    # Load and append tokens description
+    df_info = main.load_info_data()
+    df_info = df_info.drop("ID", axis=1)    
+    df_prepeared = pd.merge(df_prepeared, df_info, on="Ticker")
+
     
 
     total_invested_value = df_sum['Invested Value'].sum()
@@ -52,6 +61,8 @@ if option == "Porfolio owerview":
     container.write(formatted_sum_unrealised_profit)
     st.dataframe(df_prepeared)
     plot = px.pie(df_prepeared, values='value', names='Ticker',title='Allocation',width=650, height=650 )
+    st.plotly_chart(plot)
+    plot = px.pie(df_prepeared, values='value', names='Information',title='Sector distribution',width=650, height=650 )
     st.plotly_chart(plot)
 
 if option == "Line chart":
