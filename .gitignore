@@ -5,3 +5,4 @@ data/test.db
 test.py
 test2.py
 test3.ipynb
+__pycache__
