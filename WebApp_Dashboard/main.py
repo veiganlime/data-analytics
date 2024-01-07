@@ -34,6 +34,14 @@ def get_price(ticker):
     price = ticker_price_df.at[1, f'{ticker} price']
     return(price)
 
+def load_info_data():
+    # Load the data from SQL database
+    conn = sql.connect('data/Crypto.db') 
+    df_info = pd.read_sql_query("SELECT * FROM TOKENSINFO", conn)
+    conn.close 
+
+    return df_info
+
 def load_data():
     # Load the data from SQL database
     conn = sql.connect('data/Crypto.db') 

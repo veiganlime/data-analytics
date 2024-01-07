@@ -2,14 +2,11 @@ import sqlite3
 
 
 def create_table(conn):
-    conn.execute('''CREATE TABLE IF NOT EXISTS PORTFOLIO
-        (ID INT PRIMARY KEY     NOT NULL,
-        Ticker           TEXT    NOT NULL,
-        Amount           INT     NOT NULL,
-        BuyDate          INT     NOT NULL,
-        SellDate         INT     NOT NULL,
-        BuyPrice         INT     NOT NULL ,
-        SellPrice        INT     NOT NULL)''')
+    conn.execute('''CREATE TABLE IF NOT EXISTS TOKENSINFO
+                                (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                                Ticker               TEXT    NOT NULL,
+                                Information          TEXT     NOT NULL
+                                )''')
 
 
 def main():
