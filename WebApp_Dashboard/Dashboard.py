@@ -5,9 +5,11 @@ import main
 import yfinance as yf
 import plotly_express as px
 
-st.sidebar.write("Select dashboard:")
 
 
+
+
+st.sidebar.write("<h1>Igor WebApp</h1>", unsafe_allow_html=True)
 st.write("This dashboard is still under deployement")
 option = st.sidebar.selectbox(
     'Select dashboard',
