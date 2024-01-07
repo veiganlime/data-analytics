@@ -19,7 +19,7 @@
 # WebApp based financial Dashboard
 - Developing financial dashboard using Streamlit
 - to run WebApp: # streamlit run WebApp_Dashboard/Dashboard.py
-## WebApp UI
+## WebApp 'Igor'
 ### Dashboard 1 - Portfolio overwiev
 ![Alt text](data/images/Dashboard1_1.png)
 ![Alt text](data/images/Dashboard1_2.png)
