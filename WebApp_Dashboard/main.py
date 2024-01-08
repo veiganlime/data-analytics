@@ -4,6 +4,7 @@ import json
 import yaml
 import sqlite3 as sql
 import numpy as np
+import datetime
 
 # get the api key
 yaml_file = open('api_key/api_config_cc.yml', 'r')
@@ -84,6 +85,13 @@ def nearest_datetime_value(items, pivot):
     time_diff = np.abs([date - pivot for date in items])
 
     return time_diff.argmin(0)
+
+def validate(date_str):
+    try:
+        datetime.datetime.strptime(date_str, "%d.%m.%Y")
+        return True
+    except ValueError:
+        return False
 
 
 
