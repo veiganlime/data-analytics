@@ -8,6 +8,12 @@ def create_table(conn):
                                 Information          TEXT     NOT NULL
                                 )''')
 
+def insert_data(conn, ticker, information):
+
+    conn.execute('''INSERT INTO TOKENSINFO (Ticker, Information) VALUES (?, ?)''', (ticker, information))
+    
+    conn.commit()
+
 
 def main():
     conn = sqlite3.connect('data/Crypto.db')
