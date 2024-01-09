@@ -5,6 +5,8 @@ import main
 import yfinance as yf
 import plotly_express as px
 import sqlite3 as sql
+import plotly.graph_objects as go
+import datetime
 
 df_prepeared = []
 
@@ -27,7 +29,7 @@ if option == "Porfolio owerview":
         calculated_value = total_amount * price
         values.append(calculated_value)
 
-    df_prepeared['value'] = values
+    df_prepeared['Value'] = values
 
 
     # Total investment value calculation 
@@ -39,14 +41,14 @@ if option == "Porfolio owerview":
     # Load and append tokens description
     df_info = main.load_info_data()
     df_info = df_info.drop("ID", axis=1)    
-    df_prepeared = pd.merge(df_prepeared, df_info, on="Ticker")
+    df_prepeared_info = pd.merge(df_prepeared, df_info, on="Ticker")
 
     
 
     total_invested_value = df_sum['Invested Value'].sum()
     formatted_sum_total_invested = f"Total Invested: ${total_invested_value:.2f}"    
 
-    sum_value = df_prepeared['value'].sum()
+    sum_value = df_prepeared['Value'].sum()
     formatted_sum = f"The total holdings: ${sum_value:.2f}"
 
     unrealised_profit = sum_value - total_invested_value
@@ -60,9 +62,9 @@ if option == "Porfolio owerview":
     container.divider()
     container.write(formatted_sum_unrealised_profit)
     st.dataframe(df_prepeared)
-    plot = px.pie(df_prepeared, values='value', names='Ticker',title='Allocation',width=650, height=650 )
+    plot = px.pie(df_prepeared, values='Value', names='Ticker',title='Allocation',width=650, height=650 )
     st.plotly_chart(plot)
-    plot = px.pie(df_prepeared, values='value', names='Information',title='Sector distribution',width=650, height=650 )
+    plot = px.pie(df_prepeared_info, values='Value', names='Information',title='Sector distribution',width=650, height=650 )
     st.plotly_chart(plot)
 
 if option == "Line chart":
@@ -198,10 +200,11 @@ if option == "Data base":
 
             ticker = st.text_input(label="Ticker:", label_visibility="visible")
             amount = st.text_input(label="Amount:", label_visibility="visible")
-            buy_date = st.text_input(label="Buy date:", label_visibility="visible")
-            sell_date = st.text_input(label="Sell date:", label_visibility="visible")
+            buy_date = st.text_input(label="Buy date in form dd.mm.yyyy:", label_visibility="visible")
+            sell_date = st.text_input(label="Sell date in form dd.mm.yyyy:", label_visibility="visible")
             buy_price = st.text_input(label="Buy price:", label_visibility="visible")
             sell_price = st.text_input(label="Sell price:", label_visibility="visible")
+
 
             btnResult = st.form_submit_button('Execute')
             
@@ -209,43 +212,86 @@ if option == "Data base":
         if btnResult:
             if len(ticker) > 0:
                 if len(amount) >0:
-                
-                    st.text('Query executed')
-
-                    conn = sql.connect('data/test.db')
-
-                    with conn:
-                        create_table_query = '''CREATE TABLE IF NOT EXISTS PORTFOLIO
-                                (ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                                Ticker           TEXT    NOT NULL,
-                                Amount           INT     NOT NULL,
-                                BuyDate          INT     NOT NULL,
-                                SellDate         INT     NOT NULL,
-                                BuyPrice         INT     NOT NULL ,
-                                SellPrice        INT     NOT NULL)'''
-                        
-                        insert_query = '''
-                            INSERT INTO PORTFOLIO (Ticker, Amount, BuyDate, SellDate, BuyPrice, SellPrice)
-                            VALUES (?, ?, ?, ?, ?, ?);'''
-                        
+                    if main.validate(buy_date):
                         # if the value is  NULL, then value should be 0.
                         buy_date = buy_date if buy_date else 0
                         sell_date = sell_date if sell_date else 0 
                         buy_price = buy_price if buy_price else 0
-                        sell_price = sell_price if sell_price else 0
+                        sell_price = 0               
+                        
 
-                        record_values = (ticker.upper(), amount, buy_date, sell_date, buy_price, sell_price)            
+                        conn = sql.connect('data/test.db')
+
+                        with conn:
+                            create_table_query = '''CREATE TABLE IF NOT EXISTS PORTFOLIO
+                                    (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    Ticker           TEXT    NOT NULL,
+                                    Amount           INT     NOT NULL,
+                                    BuyDate          INT     NOT NULL,
+                                    SellDate         INT     NOT NULL,
+                                    BuyPrice         INT     NOT NULL ,
+                                    SellPrice        INT     NOT NULL)'''
+                            
+                            insert_query = '''
+                                INSERT INTO PORTFOLIO (Ticker, Amount, BuyDate, SellDate, BuyPrice, SellPrice)
+                                VALUES (?, ?, ?, ?, ?, ?);'''
+                            
+                            
+
+                            record_values = (ticker.upper(), amount, buy_date, sell_date, buy_price, sell_price)            
+                            
                         
-                    
-                        conn.execute(create_table_query)
-                        conn.execute(insert_query, record_values)
-                        # Load the data from SQL database
+                            conn.execute(create_table_query)
+                            conn.execute(insert_query, record_values)
+                            # Load the data from SQL database
+                            
+                            df_sql = pd.read_sql_query("SELECT * FROM PORTFOLIO", conn)
+                            st.table(df_sql)
                         
-                        df_sql = pd.read_sql_query("SELECT * FROM PORTFOLIO", conn)
-                        st.table(df_sql)
-                    
-                    conn.commit()
-                    conn.close()
+                        conn.commit()
+                        conn.close()
+                        st.text('Query executed')
+
+                    elif main.validate(sell_date):
+
+                        # if the value is  NULL, then value should be 0.
+                        buy_date = buy_date if buy_date else 0
+                        sell_date = sell_date if sell_date else 0 
+                        buy_price = 0
+                        sell_price = sell_price if sell_price else 0                
+                        
+
+                        conn = sql.connect('data/test.db')
+
+                        with conn:
+                            create_table_query = '''CREATE TABLE IF NOT EXISTS PORTFOLIO
+                                    (ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                                    Ticker           TEXT    NOT NULL,
+                                    Amount           INT     NOT NULL,
+                                    BuyDate          INT     NOT NULL,
+                                    SellDate         INT     NOT NULL,
+                                    BuyPrice         INT     NOT NULL ,
+                                    SellPrice        INT     NOT NULL)'''
+                            
+                            insert_query = '''
+                                INSERT INTO PORTFOLIO (Ticker, Amount, BuyDate, SellDate, BuyPrice, SellPrice)
+                                VALUES (?, ?, ?, ?, ?, ?);'''
+                            
+                            
+
+                            record_values = (ticker.upper(), amount, buy_date, sell_date, buy_price, sell_price)            
+                            
+                        
+                            conn.execute(create_table_query)
+                            conn.execute(insert_query, record_values)
+                            # Load the data from SQL database
+                            
+                            df_sql = pd.read_sql_query("SELECT * FROM PORTFOLIO", conn)
+                            st.table(df_sql)
+                        
+                        conn.commit()
+                        conn.close()
+                        st.text('Query executed')
                 else:
                     st.text('Amount Error! - Please give the number of quantity!')
             else:

@@ -11,7 +11,8 @@
     - Cryptocompare
     - Yahoo Finance
 
-- To run the WebApp:  'streamlit run WebApp_Dashboard/Dashboard.py' 
+- Command to run the WebApp:  
+    > streamlit run WebApp_Dashboard/Dashboard.py 
 ## WebApp - 'Igor' 
 ### Dashboard 1 - Portfolio overwiev
 ![Alt text](data/images/Dashboard1_1.png)
