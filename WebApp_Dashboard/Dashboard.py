@@ -64,8 +64,7 @@ if option == "Porfolio owerview":
     st.dataframe(df_prepeared)
     plot = px.pie(df_prepeared, values='Value', names='Ticker',title='Allocation',width=650, height=650 )
     st.plotly_chart(plot)
-    #plot = px.pie(df_prepeared_info, values='Value', names='Information',title='Sector distribution',width=650, height=650 )
-    plot = go.pie_3d(df_prepeared_info, values='Value', names='Information', title='Sector distribution')
+    plot = px.pie(df_prepeared_info, values='Value', names='Information',title='Sector distribution',width=650, height=650 )
     st.plotly_chart(plot)
 
 if option == "Line chart":
@@ -205,6 +204,7 @@ if option == "Data base":
             sell_date = st.text_input(label="Sell date in form dd.mm.yyyy:", label_visibility="visible")
             buy_price = st.text_input(label="Buy price:", label_visibility="visible")
             sell_price = st.text_input(label="Sell price:", label_visibility="visible")
+
 
             btnResult = st.form_submit_button('Execute')
             
