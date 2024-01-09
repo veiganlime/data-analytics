@@ -213,7 +213,7 @@ if option == "Data base":
             if len(ticker) > 0:
                 if len(amount) >0:
                     if main.validate(buy_date):
-                        # if the value is  NULL, then value should be 0.
+                        # if the value is  NULL, then value should contain "0" value.
                         buy_date = buy_date if buy_date else 0
                         sell_date = sell_date if sell_date else 0 
                         buy_price = buy_price if buy_price else 0
@@ -250,7 +250,7 @@ if option == "Data base":
                         
                         conn.commit()
                         conn.close()
-                        st.text('Query executed')
+                        st.text('Query executed')                        
 
                     elif main.validate(sell_date):
 
@@ -292,10 +292,13 @@ if option == "Data base":
                         conn.commit()
                         conn.close()
                         st.text('Query executed')
+                    else:
+                        st.text('Date format error! - Your date is now valid! Use this fromat: dd.mm.yyyy')
+
                 else:
-                    st.text('Amount Error! - Please give the number of quantity!')
+                    st.text('Amount error! - Please give the number of quantity!')
             else:
-                st.text('Ticker Error! - Please give ticker name!')
+                st.text('Ticker error! - Please give ticker name!')
 
     if option2 == "Delete a record":
          
